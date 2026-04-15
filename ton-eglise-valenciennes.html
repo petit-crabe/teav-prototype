@@ -238,23 +238,7 @@
         );
       }
 
-      /* scroll indicator — centré via left:0/right:0 */
-      .scroll-hint {
-        position: absolute;
-        bottom: 2.5rem;
-        left: 0;
-        right: 0;
-        display: flex;
-        flex-direction: column;
-        align-items: center;
-        gap: 0.5rem;
-        color: var(--white);
-        font-size: 1rem;
-        letter-spacing: 0.08em;
-        opacity: 0;
-        z-index: 2;
-        animation: fadeIn 1s 1.2s forwards;
-      }
+      /* scroll indicator */
       .scroll-hint {
         position: absolute;
         bottom: 2.5rem;
@@ -266,25 +250,19 @@
         z-index: 2;
         animation: fadeIn 1s 1.2s forwards;
       }
-      .scroll-hint::after {
-        content: "";
-        display: block;
-        width: 2px;
-        height: 52px;
-        background: linear-gradient(to bottom, var(--gold), transparent);
-        animation: scrollLine 1.8s ease-in-out infinite;
+      .scroll-hint svg {
+        color: var(--gold);
+        animation: arrowBounce 1.8s ease-in-out infinite;
       }
-      @keyframes scrollLine {
+      @keyframes arrowBounce {
         0%,
         100% {
-          opacity: 0.3;
-          transform: scaleY(0.5);
-          transform-origin: top;
+          opacity: 0.4;
+          transform: translateY(-4px);
         }
         50% {
           opacity: 1;
-          transform: scaleY(1);
-          transform-origin: top;
+          transform: translateY(4px);
         }
       }
       @keyframes fadeIn {
@@ -296,7 +274,49 @@
         }
       }
 
-      /* ─── SECTION COMMONS ───────────────────────────────── */
+      .hero-title {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        pointer-events: none;
+        gap: 0;
+      }
+      .hero-title .line {
+        font-family: "Montserrat", sans-serif;
+        font-size: clamp(2.4rem, 6vw, 5rem);
+        font-weight: 800;
+        line-height: 0.85;
+        letter-spacing: 0.01em;
+        color: var(--white);
+      }
+      .hero-title .line-1 {
+        transform: translateX(-25%);
+      }
+      .hero-title .line-2 {
+        transform: translateX(25%);
+      }
+      .hero-title .line-2 span {
+        color: var(--gold);
+        font-size: 1.455em;
+        display: inline-block;
+        width: 2.6em;
+        text-align: left;
+        transition:
+          opacity 0.5s ease,
+          transform 0.5s ease;
+      }
+      .hero-title .line-2 span.fade-out {
+        opacity: 0;
+        transform: translateY(8px);
+      }
+      .hero-title .line-2 span.fade-in {
+        opacity: 1;
+        transform: translateY(0);
+      }
       section {
         padding: 7rem 5vw;
       }
@@ -993,7 +1013,27 @@
     <!-- ─── HERO ─────────────────────────────────────────── -->
     <section class="hero" id="hero">
       <div class="hero-bg"></div>
-      <div class="scroll-hint"></div>
+      <div class="hero-title">
+        <p class="line line-1">Une église</p>
+        <p class="line line-2">pour <span>Toi</span></p>
+      </div>
+      <div class="scroll-hint">
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          width="48"
+          height="48"
+          viewBox="0 0 24 24"
+          fill="none"
+          stroke="currentColor"
+          stroke-width="1.25"
+          stroke-linecap="round"
+          stroke-linejoin="round"
+        >
+          <path d="M12 2v14" />
+          <path d="m19 9-7 7-7-7" />
+          <path d="M5 22h14" />
+        </svg>
+      </div>
     </section>
 
     <!-- ─── ÉVÉNEMENTS ────────────────────────────────────── -->
@@ -1553,7 +1593,21 @@
         logo.forEach((s) => (s.style.fontSize = pastHero ? "1rem" : "1.2rem"));
       });
 
-      // Lien actif selon la section visible
+      // Cycle Toi / Moi / Nous
+      const words = ["Toi", "Moi", "Nous"];
+      let wordIndex = 0;
+      const wordEl = document.querySelector(".hero-title .line-2 span");
+      wordEl.classList.add("fade-in");
+      setInterval(() => {
+        wordEl.classList.remove("fade-in");
+        wordEl.classList.add("fade-out");
+        setTimeout(() => {
+          wordIndex = (wordIndex + 1) % words.length;
+          wordEl.textContent = words[wordIndex];
+          wordEl.classList.remove("fade-out");
+          wordEl.classList.add("fade-in");
+        }, 500);
+      }, 3000);
       const sections = document.querySelectorAll("section[id]");
       const navLinks = document.querySelectorAll(".nav-links a");
       const sectionObserver = new IntersectionObserver(
